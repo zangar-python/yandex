@@ -31,4 +31,4 @@ class UserProfile(APIView):
     permission_classes = [IsAuthenticated]
     def get(self,request:Request):
         user = request.user
-        return Response({"username":user.username})
+        return Response({"username":user.username,"id":user.id})
