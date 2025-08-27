@@ -44,7 +44,10 @@ class CreateBlocks(APIView):
         serializer = BlocksSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return Response("Created!")
+            return Response({
+                "data":serializer.data,
+                "created":True
+                })
         return Response(serializer.errors)
         # return Response("Test")
 class BlogGet(APIView):
@@ -59,10 +62,52 @@ class BlogGet(APIView):
         blocks_serializer = BlocksSerializer(blocks,many=True)
         return Response(
             {
+                "like_count":blog.likes.count(),
                 "Blog":blog_serializer.data,
                 "Blocks":blocks_serializer.data
             }
         )
+class BlogSetPublic(APIView):
+    permission_classes = [IsAuthenticated]
     
+    def post(self,request:Request,pk):
+        blog = get_object_or_404(Blog,pk=pk)
+        if blog.author != request.user:
+            return Response(data={"detail":"Запрещен"},status=status.HTTP_403_FORBIDDEN)
+        if blog.public:
+            return Response(data={"detail":"Блог уже публичный"},status=status.HTTP_400_BAD_REQUEST)
+        blog.public = True
+        blog.save()
+        serializer = BlogSerializer(data=blog)
+        return Response({
+            "blog":serializer.data,
+            "likes_count":blog.likes.count()
+        })
         
-         
+
+class BlogLiked(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self,request:Request,pk):
+        blog = get_object_or_404(Blog,pk=pk)
+        if not blog.public:
+            return Response({"detail":"Blog is not public"})
+        if request.user in blog.likes.all():
+            blog.likes.remove(request.user)
+            liked = False
+        else:
+            blog.likes.add(request.user)
+            liked = True
+        
+        return Response({
+            "liked":liked,
+            "likes_count":blog.likes.count()
+        })
+        
+        
+class BlogsGetList(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self,request:Request):
+        blogs = Blog.objects.all()
+        serializer = BlogSerializer(blogs,many=True)
+        return Response(serializer.data)

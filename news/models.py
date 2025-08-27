@@ -5,7 +5,10 @@ from django.contrib.auth.models import User
 
 class Blog(models.Model):
     author = models.ForeignKey(User,on_delete=models.CASCADE,related_name="blogs")
-    likes = models.ForeignKey(User,on_delete=models.CASCADE,related_name="likes",null=True,blank=True)
+    # likes = models.ForeignKey(User,on_delete=models.CASCADE,related_name="likes",null=True,blank=True)
+    
+    likes = models.ManyToManyField(User,related_name="liked_blogs",null=True,blank=True)
+    
     header = models.CharField(max_length=50)
     image = models.ImageField(upload_to="images/",blank=True,null=True)    
     public = models.BooleanField(default=False)

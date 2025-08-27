@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'accounts',
     'mail',
-    "news"
+    "news",
+    "recommend"
 ]
 
 REST_FRAMEWORK = {
