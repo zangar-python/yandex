@@ -61,7 +61,7 @@ class RecommendByAuthor(APIView):
             id__in=user_liked_blogs_id
         ).distinct().annotate(
             sum_likes = Count("likes")
-        ).order_by("-sum_likes")[:10]
+        ).order_by("-sum_likes")[:10] 
         
         serializer = BlogSerializer(recommend,many=True)
         return Response(serializer.data)

@@ -9,6 +9,8 @@ from django.contrib.auth import authenticate
 from rest_framework import status
 from .serializer import UserSerializer
 
+from news.serializers import BlogSerializer
+
 class UserRegisterView(APIView):
     def post(self,request:Request):
         serializer = UserSerializer(data=request.data)
@@ -31,4 +33,29 @@ class UserProfile(APIView):
     permission_classes = [IsAuthenticated]
     def get(self,request:Request):
         user = request.user
-        return Response({"username":user.username,"id":user.id})
+        user_blogs = user.blogs.all()
+        user_blogs_serializer = BlogSerializer(user_blogs,many=True)
+        return Response(
+            {
+                "username":user.username,
+                "id":user.id,
+                "your_posts":user_blogs_serializer.data
+            }
+        )
+
+class UserLikedBlogs(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self,request:Request):
+        user = request.user
+        
+        liked_blogs = user.liked_blogs.all()
+        serializator = BlogSerializer(liked_blogs,many=True)
+        return Response(
+            {
+                "username":user.username,
+                "id":user.id,
+                "liked_blogs":serializator.data 
+            }
+        )    
+    
