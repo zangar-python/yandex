@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
+from .models import Follow
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -12,4 +13,8 @@ class UserSerializer(serializers.ModelSerializer):
         password = validate_data['password']
         return User.objects.create_user(username=username,password=password)
     
-    
+
+class FollowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Follow
+        fields = "__all__"

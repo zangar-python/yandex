@@ -45,10 +45,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    'accounts',
+    'accounts.apps.AccountsConfig',
     'mail',
-    "news",
-    "recommend"
+    "news.apps.NewsConfig",
+    "recommend",
+    "disk.apps.DiskConfig"
 ]
 
 REST_FRAMEWORK = {

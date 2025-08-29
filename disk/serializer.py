@@ -4,4 +4,4 @@ from rest_framework.serializers import ModelSerializer
 class FileSerializer(ModelSerializer):
     class Meta:
         model = File
-        fialds = "__all__"
+        fields = "__all__"

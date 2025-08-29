@@ -18,15 +18,16 @@ from django.contrib import admin
 from django.urls import path,include
 from django.conf import settings
 from django.conf.urls.static import static
-
+import os
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('account/',include('accounts.urls')),
     path('mail/',include('mail.urls')),
-    path("blogs/",include('news.urls'))
+    path("blogs/",include('news.urls')),
+    path("disk/",include("disk.urls"))
 ]
 
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
+    urlpatterns += static("/media/images/",document_root=os.path.join(settings.MEDIA_ROOT,"images"))
 

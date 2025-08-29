@@ -5,6 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import Blocks,Blog,BlocksSerializer,BlogSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
+from django.db.models import Count
+from mail.messages import user_liked_blog_send_message,send_followers_message
 
 class CreateBlog(APIView):
     permission_classes = [IsAuthenticated]
@@ -77,13 +79,11 @@ class BlogSetPublic(APIView):
         if blog.public:
             return Response(data={"detail":"Блог уже публичный"},status=status.HTTP_400_BAD_REQUEST)
         blog.public = True
+        serializer = BlogSerializer(blog)
         blog.save()
-        serializer = BlogSerializer(data=blog)
-        return Response({
-            "blog":serializer.data,
-            "likes_count":blog.likes.count()
-        })
+        send_followers_message(blog)
         
+        return Response({"blog":serializer.data})        
 
 class BlogLiked(APIView):
     permission_classes = [IsAuthenticated]
@@ -94,13 +94,17 @@ class BlogLiked(APIView):
         if request.user in blog.likes.all():
             blog.likes.remove(request.user)
             liked = False
+            detail = "disliked"
         else:
             blog.likes.add(request.user)
             liked = True
+            detail = user_liked_blog_send_message(blog,request.user)
+            
         
         return Response({
             "liked":liked,
-            "likes_count":blog.likes.count()
+            "likes_count":blog.likes.count(),
+            "detail":detail
         })
         
         
@@ -108,6 +112,6 @@ class BlogsGetList(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self,request:Request):
-        blogs = Blog.objects.all()
+        blogs = Blog.objects.filter(public=True).annotate(sum_likes=Count("likes")).order_by("-sum_likes")
         serializer = BlogSerializer(blogs,many=True)
         return Response(serializer.data)

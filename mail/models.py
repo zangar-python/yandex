@@ -12,6 +12,6 @@ class Message(models.Model):
     is_readed = models.BooleanField(default=False)
     
     def __str__(self):
-        return f"from:{self.from_user}"
+        return f"from:{self.from_user} header:{self.header}"
     
     
