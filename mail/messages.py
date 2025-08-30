@@ -1,4 +1,4 @@
-from news.models import Blog
+from news.models import Blog,Comment
 from django.contrib.auth.models import User
 from .models import Message
 
@@ -33,3 +33,26 @@ def send_followers_message(blog:Blog):
         message.save()
         print(f"message: {message.header} sended to user {follower.username}")
     print("Message sended")
+    return
+
+def send_comment(comment:Comment):
+    comment_user:User = comment.user
+    author:User = comment.to_blog.author
+    Message.objects.create(
+        to_user=author,
+        from_user=comment_user,
+        header=f"{comment_user.username} коментировал ваш блог",
+        text = f"{comment_user.username} коментировал ваш блог {comment.to_blog.header}.'{comment.text}'"
+    )
+    print("message sended")
+    return
+
+def send_comment_like(comment:Comment,user:User):
+    comment_user = comment.user
+    Message.objects.create(
+        to_user=comment_user,
+        from_user=user,
+        header=f"{user.username} Поставил лайк вашему комменту",
+        text = f"{user.username} поставил лайк вашему комментарию {comment.text} под блогом {comment.to_blog.header}"
+    )
+    return

@@ -22,3 +22,15 @@ class Blocks(models.Model):
     image = models.ImageField(upload_to="images/",blank=True,null=True) 
     def __str__(self):
         return f"to : {self.blog.header}"
+    
+class Comment(models.Model):
+    to_blog = models.ForeignKey(Blog, on_delete=models.CASCADE,related_name="comments")
+    text = models.CharField(max_length=250)
+    user = models.ForeignKey(User,models.CASCADE,related_name="comments")
+    likes = models.ManyToManyField(User,blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    def likes_count(self):
+        return self.likes.count()
+    def __str__(self):
+        return self.text
+    
