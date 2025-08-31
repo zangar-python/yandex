@@ -1,5 +1,7 @@
 from news.models import Blog,Comment
+from news.comments.serializer import CommentSerializer
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 from .models import Message
 
 def user_liked_blog_send_message(blog:Blog,user:User):
@@ -35,7 +37,8 @@ def send_followers_message(blog:Blog):
     print("Message sended")
     return
 
-def send_comment(comment:Comment):
+def send_comment(comment_serializer:CommentSerializer):
+    comment : Comment = get_object_or_404(Comment,id=comment_serializer['id'])
     comment_user:User = comment.user
     author:User = comment.to_blog.author
     Message.objects.create(

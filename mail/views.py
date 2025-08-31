@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 class NewMessages(APIView):
     permission_classes = [IsAuthenticated]
     def get(self,request:Request):
-        messages = Message.objects.filter(to_user=request.user,is_readed=False)
+        messages = Message.objects.filter(to_user=request.user,is_readed=False).order_by("-sended")
         serializer = MessageSerializer(messages,many=True)
         count = messages.count()
         return Response({

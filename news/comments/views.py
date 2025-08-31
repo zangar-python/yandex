@@ -11,22 +11,32 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from django.db.models import Count
 
+from mail.messages import send_comment,send_comment_like
+
 class GetSetComments(APIView):
     permission_classes = [IsAuthenticated]
     
-    def post(self,request:Request,pk):
+    def post(self,request:Request,pk:int):
         blog : Blog = get_object_or_404(Blog,pk=pk)
         if not blog.public:
             return Response(data={"detail":"blog is not public"})
         user : User = request.user
         obj = {
-            "to_blog":blog,
-            "user":user,
+            "to_blog":blog.id,
+            "user":user.id,
             "text":request.data.get("text")
         }
+        # comment = Comment.objects.create(
+        #     to_blog=blog,
+        #     user=user,
+        #     text=request.data.get("text")
+        # )
+        
         serializer = CommentSerializer(data=obj)
         if serializer.is_valid():
             serializer.save()
+            # print(serializer.data)
+            send_comment(serializer.data)
             return Response(serializer.data)
         return Response(serializer.errors)
     
@@ -52,6 +62,7 @@ class LikeComment(APIView):
             })
         if not user in comment.likes.all():
             comment.likes.add(user)
+            send_comment_like(comment,user)
             return Response(data={
                 "detail":"like is added",
                 "user":user.username,

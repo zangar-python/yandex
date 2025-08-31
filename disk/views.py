@@ -21,6 +21,13 @@ class FileGetPostViews(APIView):
         serializer = FileSerializer(data=obj)
         if serializer.is_valid():
             serializer.save()
+            
+            files = File.objects.filter(user=user)
+            sum_ = sum([f.file.size for f in files])
+            if sum_ > 100 * 1024 * 1024:
+                file = files.filter(id=serializer.data['id'])
+                file.delete()
+                return Response({"err":"Ваши файлы перевешивают 100mb"})
             return Response(data={"details":"saved!","data":serializer.data},status=status.HTTP_200_OK)
         return Response(data={"error":serializer.errors},status=status.HTTP_400_BAD_REQUEST)
     
@@ -42,11 +49,6 @@ class FileDeleteGet(APIView):
     
     def get(self,request:Request,pk):
         file = get_object_or_404(File,pk=pk)
-        # serilizer = FileSerializer(file)
-        # return Response(data={
-        #     "user":request.user.username,
-        #     "data":serilizer.data
-        # })
         if not file.user == request.user:
             return Response(status=status.HTTP_404_NOT_FOUND)
         file_path = file.file.path
