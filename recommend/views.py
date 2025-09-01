@@ -68,8 +68,6 @@ class RecommendByAuthor(APIView):
 class ReccomendFollowings(APIView):
     permission_classes = [IsAuthenticated]
     
-    
-    
     def get(self,request:Request):
         user : User = request.user
         followings = user.followings.all().values_list("to_user",flat=True)

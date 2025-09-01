@@ -25,7 +25,8 @@ urlpatterns = [
     path('account/',include('accounts.urls')),
     path('mail/',include('mail.urls')),
     path("blogs/",include('news.urls')),
-    path("disk/",include("disk.urls"))
+    path("disk/",include("disk.urls")),
+    path("search/",include("search.urls"))
 ]
 
 if settings.DEBUG:

@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'mail',
     "news.apps.NewsConfig",
     "recommend",
-    "disk.apps.DiskConfig"
+    "disk.apps.DiskConfig",
+    "search"
 ]
 
 REST_FRAMEWORK = {
