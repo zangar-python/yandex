@@ -36,7 +36,7 @@ class GetSetComments(APIView):
         if serializer.is_valid():
             serializer.save()
             # print(serializer.data)
-            send_comment(serializer.data)
+            send_comment(serializer.data.id)
             return Response(serializer.data)
         return Response(serializer.errors)
     

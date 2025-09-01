@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.authtoken.models import Token
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,IsAdminUser
 
 
 from django.shortcuts import get_object_or_404
@@ -19,16 +19,31 @@ class UserRegisterView(APIView):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            return Response({'username':user.username,"password":user.password,"id":user.id})
-        return Response(serializer.errors)
+            return Response(data={
+                'username':user.username,
+                "password":user.password,
+                "id":user.id,
+                "connect":True,
+                "user_saved":True
+                },status=status.HTTP_200_OK)
+        return Response(data={
+            "error":serializer.data,
+            "detail":{
+                "connect":False,
+                "user_saved":False
+            }
+        },status=status.HTTP_400_BAD_REQUEST)
     
 class UserLoginView(APIView):
     def post(self,request:Request):
-        username = request.data['username']
-        password = request.data['password']
+        username = request.data.get("username")
+        password = request.data.get("password")
         user = authenticate(request,username=username,password=password)
         if not user:
-            return Response("Неправильные данные",status.HTTP_400_BAD_REQUEST)
+            return Response(data={
+                "error":"Пользователья с такими данными не существует"    
+                },status=status.HTTP_404_NOT_FOUND)
+            
         token,created = Token.objects.get_or_create(user=user)
         return Response({"token":token.key})
     
@@ -42,7 +57,7 @@ class UserProfile(APIView):
             {
                 "username":user.username,
                 "id":user.id,
-                "your_posts":user_blogs_serializer.data
+                "user_posts":user_blogs_serializer.data
             }
         )
 
@@ -104,4 +119,17 @@ class UserFollowings(APIView):
             "username":user.username,
             "followings":followings
         })
+
+class GetAllUserData(APIView):
+    permission_classes = [IsAdminUser]
+    
+    def get(self,request:Request):
+        users = User.objects.all().exclude(is_superuser=True)
+        users_serializer = UserSerializer(users,many=True)
+        users_follow = [f.follow for f in users]
+        follow_serializer = FollowSerializer(users_follow,many=True)
         
+        return Response(data={
+            "users":users_serializer.data,
+            "user_follow":follow_serializer.data
+        })

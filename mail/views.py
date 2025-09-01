@@ -31,7 +31,11 @@ class NewMessages(APIView):
         serilizer = MessageSerializer(data=data)
         if serilizer.is_valid():
             serilizer.save()
-            return Response("sended!")
+            return Response(data={
+                "username":request.user.username,
+                "result":"sended!",
+                "message":serilizer.data
+            },status=status.HTTP_200_OK)
         return Response(serilizer.errors,status.HTTP_400_BAD_REQUEST)
 
 class MessageRead(APIView):

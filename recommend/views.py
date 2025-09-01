@@ -65,3 +65,28 @@ class RecommendByAuthor(APIView):
         
         serializer = BlogSerializer(recommend,many=True)
         return Response(serializer.data)
+class ReccomendFollowings(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    
+    
+    def get(self,request:Request):
+        user : User = request.user
+        followings = user.followings.all().values_list("to_user",flat=True)
+        
+        liked_blogs = user.liked_blogs.all().values_list("id",flat=True)
+        
+        blogs = Blog.objects.filter(
+            author__in = followings
+        ).exclude(
+            public=False,id__in=liked_blogs
+        ).distinct().annotate(
+            like_sum = Count("likes")
+        ).order_by("-like_sum")
+        
+        serializer = BlogSerializer(blogs,many=True)
+        return Response(data={
+            "user":user.username,
+            "user_id":user.id,
+            "data":serializer.data
+        })

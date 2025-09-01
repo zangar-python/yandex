@@ -65,3 +65,4 @@ class FileDeleteGet(APIView):
         return Response(data={
             "detail":"deleted"
         })
+        # Завтрашний день улучшать свой предедущие коды,чтобы потом можно было легко читать и улучшать
