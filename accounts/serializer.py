@@ -7,12 +7,11 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['username','password']
+        fields = ['username','password',"id"]
     def create(self,validate_data):
         username = validate_data['username']
         password = validate_data['password']
         return User.objects.create_user(username=username,password=password)
-    
 
 class FollowSerializer(serializers.ModelSerializer):
     class Meta:

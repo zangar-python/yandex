@@ -9,6 +9,7 @@ from django.db.models import Count
 from accounts.serializer import UserSerializer
 from news.serializers import BlogSerializer,BlocksSerializer
 
+from .getFilterInfo import GetObjects
 
 class FilterGet(APIView):
     permission_classes = [IsAuthenticated]
@@ -18,16 +19,16 @@ class FilterGet(APIView):
         blogs = Blog.objects.filter(header__contains=word).exclude(public=False).annotate(like_sum=Count("likes")).order_by("-like_sum")
         not_public_id = Blog.objects.filter(public=False).values_list("id",flat=True)
         blocks =Blocks.objects.filter(header__contains=word,title__contains=word).exclude(id__in=not_public_id)
-        user_serializer = UserSerializer(users,many=True)
-        blog_serializer = BlogSerializer(blogs,many=True)
         block_serializer = BlocksSerializer(blocks,many=True)
+        
+        obj = GetObjects(users,blogs)
         
         return Response({
             "user":request.user.username,
             "id__":request.user.id,
             "data":{
-                "users":user_serializer.data,
-                "blogs":blog_serializer.data,
+                "users":obj['users'],
+                "blogs":obj['blogs'],
                 "blocks":block_serializer.data
             }
         })
