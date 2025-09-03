@@ -22,7 +22,6 @@ class FilterGet(APIView):
         block_serializer = BlocksSerializer(blocks,many=True)
         
         obj = GetObjects(users,blogs)
-        
         return Response({
             "user":request.user.username,
             "id__":request.user.id,
