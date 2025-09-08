@@ -9,7 +9,10 @@ from django.db.models import Count
 from accounts.serializer import UserSerializer
 from news.serializers import BlogSerializer,BlocksSerializer
 
+from recommend.adsRecommend import defaultRecommends
+
 from .getFilterInfo import GetObjects
+from .models import Story
 
 class FilterGet(APIView):
     permission_classes = [IsAuthenticated]
@@ -21,6 +24,11 @@ class FilterGet(APIView):
         blocks =Blocks.objects.filter(header__contains=word,title__contains=word).exclude(id__in=not_public_id)
         block_serializer = BlocksSerializer(blocks,many=True)
         
+        Story.objects.create(
+            text=word,
+            user=request.user
+        )
+        
         obj = GetObjects(users,blogs)
         return Response({
             "user":request.user.username,
@@ -29,5 +37,6 @@ class FilterGet(APIView):
                 "users":obj['users'],
                 "blogs":obj['blogs'],
                 "blocks":block_serializer.data
-            }
+            },
+            "ads":defaultRecommends()
         })
