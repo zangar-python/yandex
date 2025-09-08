@@ -1,6 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
+from time import sleep
+
+
 url = "https://www.gismeteo.kz/weather-kyzylorda-5319/10-days/"
+
 
 headers = {
     "User-Agent": (

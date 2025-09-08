@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     "news.apps.NewsConfig",
     "recommend",
     "disk.apps.DiskConfig",
-    "search"
+    "search",
+    "ads"
 ]
 
 REST_FRAMEWORK = {

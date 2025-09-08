@@ -7,11 +7,13 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Count
 
+from .adsRecommend import defaultRecommends
+
 class RecommendedBlogs(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self,request:Request):
-        user = request.user
+        user : User = request.user
         liked_blogs = user.liked_blogs.all()
         
         if not liked_blogs.exists():
@@ -35,14 +37,20 @@ class RecommendedBlogs(APIView):
             sum_likes = Count("likes")
         ).order_by("-sum_likes")[:10]
         
-        serilizer = BlogSerializer(recommended_blogs,many=True)
-        return Response(serilizer.data)
+        
+        serializer = BlogSerializer(recommended_blogs,many=True)
+        return Response({
+            "user":user.username,
+            "user_id":user.id,
+            "data":serializer.data,
+            "ads":defaultRecommends()
+        })
         
 class RecommendByAuthor(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self,request:Request):
-        user = request.user
+        user :User = request.user
         user_liked_blogs = user.liked_blogs.all()
         
         authors_this_blogs = User.objects.filter(
@@ -62,7 +70,12 @@ class RecommendByAuthor(APIView):
         ).order_by("-sum_likes")[:10] 
         
         serializer = BlogSerializer(recommend,many=True)
-        return Response(serializer.data)
+        return Response({
+            "user":user.username,
+            "user_id":user.id,
+            "data":serializer.data,
+            "ads":defaultRecommends()
+        })
 class ReccomendFollowings(APIView):
     permission_classes = [IsAuthenticated]
     
@@ -84,5 +97,6 @@ class ReccomendFollowings(APIView):
         return Response(data={
             "user":user.username,
             "user_id":user.id,
-            "data":serializer.data
+            "data":serializer.data,
+            "ads":defaultRecommends()
         })
