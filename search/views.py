@@ -9,7 +9,7 @@ from django.db.models import Count
 from accounts.serializer import UserSerializer
 from news.serializers import BlogSerializer,BlocksSerializer
 
-from recommend.adsRecommend import defaultRecommends
+from recommend.adsRecommend import defaultRecommends,recommendByStory
 
 from .getFilterInfo import GetObjects
 from .models import Story
@@ -38,5 +38,5 @@ class FilterGet(APIView):
                 "blogs":obj['blogs'],
                 "blocks":block_serializer.data
             },
-            "ads":defaultRecommends()
+            "ads":recommendByStory(user=request.user)
         })

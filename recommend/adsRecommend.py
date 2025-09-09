@@ -18,3 +18,22 @@ def defaultRecommends():
 #         text__in__contains=story
 #     ).order_by("-created_at")[:10]
 #     return itSerialized(ad)
+
+
+def recommendByStory(user:User):
+    storys = Story.objects.filter(user=user).order_by("-created_at").values_list("text",flat=True)
+    recomends = []
+    for  story in storys:
+        ad = Ad.objects.filter(
+            header__contains=story
+        ).order_by("-created_at").first()
+        if ad:
+            if not ad in recomends:    
+                recomends.append(ad)
+                
+    return {
+        "by_story":itSerialized(recomends),
+        "default":defaultRecommends()
+    }
+    
+    

@@ -37,3 +37,4 @@ def GetObjects(users,blogs):
         "users":users_new,
         "blogs":blogs_new
     }
+

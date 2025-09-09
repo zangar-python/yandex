@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Count
 
-from .adsRecommend import defaultRecommends
+from .adsRecommend import defaultRecommends,recommendByStory
 
 class RecommendedBlogs(APIView):
     permission_classes = [IsAuthenticated]
@@ -43,7 +43,7 @@ class RecommendedBlogs(APIView):
             "user":user.username,
             "user_id":user.id,
             "data":serializer.data,
-            "ads":defaultRecommends()
+            "ads":recommendByStory(user)
         })
         
 class RecommendByAuthor(APIView):
@@ -74,7 +74,7 @@ class RecommendByAuthor(APIView):
             "user":user.username,
             "user_id":user.id,
             "data":serializer.data,
-            "ads":defaultRecommends()
+            "ads":recommendByStory(user)
         })
 class ReccomendFollowings(APIView):
     permission_classes = [IsAuthenticated]
@@ -98,5 +98,5 @@ class ReccomendFollowings(APIView):
             "user":user.username,
             "user_id":user.id,
             "data":serializer.data,
-            "ads":defaultRecommends()
+            "ads":recommendByStory(user)
         })
