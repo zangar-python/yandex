@@ -27,7 +27,8 @@ urlpatterns = [
     path("blogs/",include('news.urls')),
     path("disk/",include("disk.urls")),
     path("search/",include("search.urls")),
-    path("ads/",include("ads.urls"))
+    path("ads/",include("ads.urls")),
+    path("alisa/",include("alisa.urls"))
 ]
 
 if settings.DEBUG:

@@ -51,7 +51,8 @@ INSTALLED_APPS = [
     "recommend",
     "disk.apps.DiskConfig",
     "search",
-    "ads"
+    "ads",
+    "alisa"
 ]
 
 REST_FRAMEWORK = {
