@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Count
 
-from .adsRecommend import defaultRecommends,recommendByStory
+from .adsRecommend import recommendByStory
 
 class RecommendedBlogs(APIView):
     permission_classes = [IsAuthenticated]
