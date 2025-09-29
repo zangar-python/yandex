@@ -20,6 +20,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 import os
 
+from search.main_views import GetData
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('account/',include('accounts.urls')),
@@ -28,7 +31,8 @@ urlpatterns = [
     path("disk/",include("disk.urls")),
     path("search/",include("search.urls")),
     path("ads/",include("ads.urls")),
-    path("alisa/",include("alisa.urls"))
+    path("alisa/",include("alisa.urls")),
+    path("",GetData.as_view())
 ]
 
 if settings.DEBUG:
